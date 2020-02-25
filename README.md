@@ -70,7 +70,7 @@ Wait a few seconds for everything to initialize... and enjoy!
 ### Recording your own training and testing data
 
                                                                 File to run
-    1. Modify 'constants.txt' if necessary                   |   ---------------
+    1. Modify 'constants.txt' if necessary                  |   ---------------
     2. Clear 'train_data/' of all files                     |   ---------------
     3. Record raw data on pi                                |   record.sh
     4. Download raw data from pi                            |   update_data.bat
@@ -81,7 +81,7 @@ Wait a few seconds for everything to initialize... and enjoy!
     9. Repeat steps 2-8, but this time for test data        |   ---------------
 
 ### Training your own neural network
-1. Download and unzip the [dataset]() or use your own
+1. Download and unzip the [dataset](https://www.dropbox.com/s/qi5x0g04etvrbe5/dataset.zip?dl=0) or use your own
 2. Put training data under ```train_data``` and testing data under ```test_data```
 3. Edit the hyperparameters in ```train.py```
 4. Train the neural network:
