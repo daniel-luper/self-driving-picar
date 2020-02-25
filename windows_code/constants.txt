@@ -1,0 +1,10 @@
+image width:
+160
+image height:
+90
+image crop amount:
+30
+image scale:
+5
+frame delay:
+4

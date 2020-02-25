@@ -1,0 +1,91 @@
+<html>
+<head>
+<script src="jquery-2.0.3.min.js" language="javascript"></script>
+<script src="/socket.io/socket.io.js"></script>
+<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0;" />
+<style>
+body {
+  margin: 0;
+  overflow: hidden;
+}
+</style>
+<script>
+
+// Variables for connection
+var socket = io.connect(window.location.hostname+':8080');
+var nIntervId;
+
+// Touch coordinates
+var defaultAY = 190;
+var touchAY = defaultAY;
+var defaultBX = 480;
+var touchBX = defaultBX;
+
+// Variables for recording
+var MAX_SPEED = 80;
+var SPEED_THRESHOLD = 30;
+var TURN_THRESHOLD = 0.3;
+
+// Variables to send to Raspberrry Pi
+var speed = 0;
+var horizontal = 0;
+
+// This function is called when the page 1st loads on your phone
+$(function()
+{
+  // Send data to the pi at 20Hz
+  nIntervId = setInterval(SendToPi, 50);
+
+  // Handle input
+  document.addEventListener("click", onClick);
+});
+
+// INPUT
+function onClick(event)
+{
+  var elem = document.getElementById('canvas');
+  elem.webkitRequestFullscreen();
+}
+
+function onForward()
+{
+  console.log("Well that's a bit forward...");
+  command = "forward";
+  socket.emit('fromclient', { command: command } );
+}
+
+function onBackward()
+{
+  console.log("Don't look back.");
+  command = "backward";
+  socket.emit('fromclient', { command: command } );
+}
+
+function onExit()
+{
+  console.log("~Peace bruh, we're out.~");
+  command = "exit";
+  socket.emit('fromclient', { command: command } );
+}
+
+function onAuto()
+{
+  console.log("Hands free!");
+  var input = document.getElementById("input");
+  command = input.value;
+  socket.emit('fromclient', { command: command } );
+}
+
+</script>
+</head>
+
+<body>
+  <button onclick="onForward()">Forward</button>
+  <button onclick="onBackward()">Backward</button>
+  <button onclick="onExit()">Exit</button>
+  <br>
+  <br>
+  <input id="input" placeholder="time (in seconds)"></input>
+  <button onclick="onAuto()">Auto-pilot</button>
+</body>
+</html>

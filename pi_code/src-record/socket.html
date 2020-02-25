@@ -1,0 +1,197 @@
+<html>
+<head>
+<script src="jquery-2.0.3.min.js" language="javascript"></script>
+<script src="/socket.io/socket.io.js"></script>
+<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0;" />
+<style>
+body {
+  margin: 0;
+  overflow: hidden;
+}
+</style>
+<script>
+
+// Variables for connection
+var socket = io.connect(window.location.hostname+':8080');
+var nIntervId;
+
+// Touch coordinates
+var defaultAY = 190;
+var touchAY = defaultAY;
+var defaultBX = 480;
+var touchBX = defaultBX;
+
+// Variables for recording
+var MAX_SPEED = 100;
+var SPEED_THRESHOLD = 30;
+var TURN_THRESHOLD = 0.3;
+
+// Variables to send to Raspberrry Pi
+var speed = 0;
+var horizontal = 0;
+
+// This function is called when the page 1st loads on your phone
+$(function()
+{
+  // Send data to the pi at 50Hz
+  nIntervId = setInterval(SendToPi, 50);
+
+  // Handle input
+  document.addEventListener("click", onClick);
+  document.addEventListener("touchmove", updateTouch);
+});
+
+// This fuction is called @ 50Hz
+function SendToPi()
+{
+  // Update our data
+  speed = (touchAY - 190) / (-1.7);
+  horizontal = (touchBX - 480) / 160;
+  if (speed > SPEED_THRESHOLD) {
+    speed = MAX_SPEED;
+  } else if (speed < -SPEED_THRESHOLD) {
+    speed = -MAX_SPEED;
+  } else {
+    speed = 0;
+  }
+  if (horizontal < -TURN_THRESHOLD) {
+    horizontal = -1;
+  } else if (horizontal > TURN_THRESHOLD) {
+    horizontal = 1;
+  } else {
+    horizontal = 0;
+  }
+
+  // Send it to the Raspberry Pi
+  socket.emit('fromclient', { command: "update", speed: speed, horizontal: horizontal } );
+
+  // Update screen
+  if (horizontal == -1) {
+    direction = "Left";
+  } else if (horizontal == 1) {
+    direction = "Right";
+  } else {
+    direction = ""
+  }
+  liveDraw();
+}
+
+// INPUT
+// Make fullscreen
+function onClick(event)
+{
+  var elem = document.getElementById('body');
+  elem.webkitRequestFullscreen();
+}
+
+// Update input values from touchscreen
+function updateTouch(event)
+{
+  touches = event.touches;
+  // Single touch
+  if (touches.length == 1)
+  {
+    if (touches.item(0).clientX < 320) {
+      touchAY = touches.item(0).clientY;
+    } else {
+      touchAY = defaultAY;
+    }
+    touchBX = defaultBX;
+  }
+  // Multiple touches
+  else if (touches.length > 1)
+  {
+    if (touches.item(0).clientX < 320 && touches.item(1).clientX >= 320) {
+      touchAY = touches.item(0).clientY;
+      touchBX = touches.item(1).clientX;
+    } else {
+      touchAY = touches.item(1).clientY;
+      touchBX = touches.item(0).clientX;
+    }
+  }
+}
+
+function shutdown()
+{
+  socket.emit('fromclient', { command: "shutdown" });
+}
+
+// GRAPHICS
+// Draw background once when page loads
+function draw()
+{
+  var canvas = document.getElementById('canvas');
+  if (canvas.getContext)
+  {
+    var context = canvas.getContext('2d');
+    context.fillStyle = 'rgb(0, 0, 0)';
+    context.fillRect(0, 0, 640, 345);
+    context.strokeStyle = 'rgb(255, 255, 255)';
+    context.lineWidth = 5;
+    context.strokeRect(10, 10, 300, 320);
+    context.strokeRect(330, 10, 300, 320);
+    context.lineWidth = 3;
+    verticalArrow(context, 160, 170);
+    horizontalArrow(context, 480, 170);
+  }
+}
+
+// Draw at 50Hz
+function liveDraw()
+{
+  var canvas = document.getElementById('canvas');
+  if (canvas.getContext)
+  {
+    var context = canvas.getContext('2d');
+    context.fillStyle = "black";
+    context.fillRect(340, 20, 200, 100);
+    context.font = "24px Arial";
+    context.fillStyle = "white";
+    context.fillText("Speed : " + Math.min(Math.round(speed), 100), 340, 50);
+    context.fillText(direction, 340, 80);
+  }
+}
+
+function verticalArrow(context, x, y)
+{
+  context.beginPath;
+  context.moveTo(x - 25, y);
+  context.lineTo(x - 25, y - 100);
+  context.lineTo(x - 50, y - 100);
+  context.lineTo(x, y - 150);
+  context.lineTo(x + 50, y - 100);
+  context.lineTo(x + 25, y - 100);
+  context.lineTo(x + 25, y + 100);
+  context.lineTo(x + 50, y + 100);
+  context.lineTo(x, y + 150);
+  context.lineTo(x - 50, y + 100);
+  context.lineTo(x - 25, y + 100);
+  context.lineTo(x - 25, y);
+  context.stroke();
+}
+
+function horizontalArrow(context, x, y)
+{
+  context.moveTo(x, y - 25);
+  context.lineTo(x + 90, y - 25);
+  context.lineTo(x + 90, y - 50);
+  context.lineTo(x + 140, y);
+  context.lineTo(x + 90, y + 50);
+  context.lineTo(x + 90, y + 25);
+  context.lineTo(x - 90, y + 25);
+  context.lineTo(x - 90, y + 50);
+  context.lineTo(x - 140, y);
+  context.lineTo(x - 90, y - 50);
+  context.lineTo(x - 90, y - 25);
+  context.lineTo(x, y - 25);
+  context.stroke();
+}
+
+</script>
+</head>
+
+<body onload="draw();" id="body">
+  <button onclick="shutdown();" style="z-index:2; position:absolute; top:30; right:40;">Shutdown</button>
+  <canvas id="canvas" width="640" height="345"></canvas>
+</body>
+</html>

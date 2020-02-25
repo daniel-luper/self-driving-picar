@@ -1,0 +1,1 @@
+put all training data in this directory (y.txt and 0.png, 1.png, 2.png, etc.)
