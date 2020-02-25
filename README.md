@@ -43,8 +43,11 @@ Install python libraries on your Windows PC
 1. Build a car using the same (or similar) [components](#components)
 2. Set the pi's hostname in ```hostname.txt```
 3. Move files from ```pi_code``` to your Raspberry Pi (under ```Documents/sdc/```)
+
 ```.\upload_to_pi.bat```
+
 4. Make the scripts executable
+
 ```chmod u+x manual.sh auto.sh record.sh```
 
 ## Usage
