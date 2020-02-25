@@ -1,7 +1,7 @@
 # Self-Driving Picar
 Code for a Raspberry Pi Model B self-driving car (heavily modified version of [picar](https://github.com/lawsonkeith/picar)).
 
-<img src=https://media.giphy.com/media/U2RDbvwigNaMPm3HtQ/giphy.gif width=640 height=360>
+<img src=./media/demo.gif width=640 height=360>
 
 ## How it works
 ### Components
