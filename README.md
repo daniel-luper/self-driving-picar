@@ -47,6 +47,7 @@ Install python libraries on your Windows PC
 ```.\upload_to_pi.bat```
 
 4. Make the scripts executable
+
 ```chmod u+x manual.sh auto.sh record.sh```
 
 ## Usage
