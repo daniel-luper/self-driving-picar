@@ -39,20 +39,20 @@ class Control(object):
         pass
 
     def forward(self):
-        gpio.output(in1, True)
-        gpio.output(in2, False)
-        gpio.output(in3, True)
-        gpio.output(in4, False)
-        pass
-
-    def reverse(self):
         gpio.output(in1, False)
         gpio.output(in2, True)
         gpio.output(in3, False)
         gpio.output(in4, True)
         pass
 
-    def stop(self):
+    def reverse(self):
+        gpio.output(in1, True)
+        gpio.output(in2, False)
+        gpio.output(in3, True)
+        gpio.output(in4, False)
+        pass
+
+    def gpio_stop(self):
         gpio.output(in1, False)
         gpio.output(in2, False)
         gpio.output(in3, False)
@@ -63,6 +63,7 @@ class Control(object):
         self.pwmA.stop()
         self.pwmB.stop()
         gpio.cleanup()
+        exit()
         pass
 
     def shutdown(self):

@@ -102,8 +102,8 @@ function clip(speed)
 // If we lose comms set the motors to neutral
 function stop()
 {
-  client.invoke('stop')
-  client.invoke('cleanup')
+  client.invoke('gpio_stop');
+  client.invoke('cleanup');
   console.log('### FULL STOP ###');
 }
 
